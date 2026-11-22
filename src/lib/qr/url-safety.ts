@@ -1,4 +1,5 @@
 import { clamp } from "@/lib/utils";
+import { QR_LIMITS } from "@/lib/qr/defaults";
 import type { QrCustomization, UpsertQrPayload, UrlAnalysis } from "@/lib/qr/types";
 
 const BLOCKED_PROTOCOLS = new Set(["javascript:", "data:", "vbscript:", "file:"]);
@@ -168,9 +169,9 @@ export function sanitizeCustomization(value: unknown, fallback: QrCustomization)
   return {
     foreground: assertColor(input.foreground, fallback.foreground),
     background: assertColor(input.background, fallback.background),
-    size: assertInteger(input.size, fallback.size, 180, 1400),
-    margin: assertInteger(input.margin, fallback.margin, 0, 12),
-    padding: assertInteger(input.padding, fallback.padding, 0, 40),
+    size: assertInteger(input.size, fallback.size, QR_LIMITS.size.min, QR_LIMITS.size.max),
+    margin: assertInteger(input.margin, fallback.margin, QR_LIMITS.margin.min, QR_LIMITS.margin.max),
+    padding: assertInteger(input.padding, fallback.padding, QR_LIMITS.padding.min, QR_LIMITS.padding.max),
     logoDataUrl: assertLogo(input.logoDataUrl)
   };
 }

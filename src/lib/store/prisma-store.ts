@@ -187,6 +187,10 @@ export const prismaRepository: QrRepository = {
     return toRecord(record);
   },
 
+  async delete(id) {
+    await prisma.qrCode.deleteMany({ where: { id } });
+  },
+
   async logScan(id, input) {
     const scan = await prisma.scanEvent.create({
       data: {

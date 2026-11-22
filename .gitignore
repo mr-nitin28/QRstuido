@@ -8,3 +8,11 @@ coverage
 data/qr-store.local.json
 prisma/dev.db
 
+# IDE & Editor files
+.codex/
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db

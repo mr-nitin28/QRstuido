@@ -37,17 +37,14 @@ export async function POST(request: NextRequest) {
   }
 
   const customization = sanitizeCustomization(body?.customization, DEFAULT_CUSTOMIZATION);
-  const qrCode = await generateQrDataUrl({
-    value: analysis.normalizedUrl,
-    size: customization.size,
-    foreground: customization.foreground,
-    background: customization.background,
-    margin: customization.margin
-  });
-
-  return NextResponse.json({
-    qrCode,
-    warnings: analysis.severity === "warning" ? analysis.messages : []
-  });
+  try {
+    const qrCode = await generateQrDataUrl(analysis.normalizedUrl, customization);
+    return NextResponse.json({
+      qrCode,
+      warnings: analysis.severity === "warning" ? analysis.messages : []
+    });
+  } catch {
+    return NextResponse.json({ error: "Unable to render this QR. Check the destination length and logo." }, { status: 422 });
+  }
 }
 

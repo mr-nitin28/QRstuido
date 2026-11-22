@@ -26,37 +26,26 @@ export default async function SharePage({
   const headerStore = await headers();
   const origin = getBaseUrlFromHeaders(headerStore);
   const redirectUrl = `${origin}/q/${slug}`;
-  const qrCode = await generateQrDataUrl({
-    value: redirectUrl,
-    size: 560,
-    foreground: record.customization.foreground,
-    background: record.customization.background,
-    margin: record.customization.margin
-  });
+  const qrCode = await generateQrDataUrl(redirectUrl, record.customization);
   const analytics = buildAnalytics(record.scans);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl items-center px-4 py-8 sm:px-6 lg:px-8">
-      <div className="grid w-full gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-        <Card className="overflow-hidden bg-surface/84">
-          <div
-            className="rounded-[28px] p-6"
-            style={{
-              background: `linear-gradient(140deg, ${record.customization.background}, rgba(255,255,255,0.9))`
-            }}
-          >
+    <main className="page-frame mx-auto flex min-h-svh max-w-5xl items-center">
+      <div className="grid w-full min-w-0 gap-3 sm:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] sm:items-start lg:gap-6">
+        <Card className="overflow-hidden">
+          <div className="rounded-2xl bg-surface p-2 sm:p-4">
             <Image
               src={qrCode}
               alt={`QR code for ${record.title}`}
-              width={560}
-              height={560}
+              width={record.customization.size}
+              height={record.customization.size}
               unoptimized
-              className="mx-auto aspect-square w-full max-w-[420px] rounded-[24px] bg-white p-4 shadow-soft"
+              className="mx-auto block h-auto max-h-[min(64svh,28rem)] max-w-full object-contain"
             />
           </div>
         </Card>
 
-        <Card className="bg-surface/84">
+        <Card>
           <CardHeader>
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent">
@@ -67,7 +56,7 @@ export default async function SharePage({
                 {record.mode === "dynamic" ? "Dynamic link" : "Static link"}
               </span>
             </div>
-            <CardTitle className="mt-2 text-3xl">{record.title}</CardTitle>
+            <CardTitle className="mt-2 text-2xl [overflow-wrap:anywhere] lg:text-3xl">{record.title}</CardTitle>
             <CardDescription>
               Scan to open the destination or use the button below. The QR resolves through a tracked redirect link.
             </CardDescription>
@@ -79,7 +68,15 @@ export default async function SharePage({
               <p className="break-all text-sm text-ink/72">{record.destinationUrl}</p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
+            <Link
+              href={redirectUrl}
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-accent/90 sm:w-auto"
+            >
+              <ExternalLink className="size-4" />
+              Open Destination
+            </Link>
+
+            <div className="grid gap-3 lg:grid-cols-3 [overflow-wrap:anywhere]">
               <div className="rounded-2xl border border-border/70 bg-surfaceAlt/55 p-4">
                 <p className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-ink/44">
                   <ScanLine className="size-3.5" />
@@ -100,13 +97,6 @@ export default async function SharePage({
               </div>
             </div>
 
-            <Link
-              href={redirectUrl}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-slate-950 transition hover:bg-accent/90"
-            >
-              <ExternalLink className="size-4" />
-              Open Destination
-            </Link>
           </div>
         </Card>
       </div>

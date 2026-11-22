@@ -16,11 +16,7 @@ export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    const saved = localStorage.getItem("qr-studio-theme");
-    const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    const next = saved === "dark" || saved === "light" ? saved : preferred;
-    setTheme(next);
-    applyTheme(next);
+    setTheme(document.documentElement.classList.contains("dark") ? "dark" : "light");
   }, []);
 
   return (

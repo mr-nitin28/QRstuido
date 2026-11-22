@@ -14,6 +14,9 @@ const config: Config = {
         surface: "rgb(var(--surface) / <alpha-value>)",
         surfaceAlt: "rgb(var(--surface-alt) / <alpha-value>)",
         ink: "rgb(var(--ink) / <alpha-value>)",
+        muted: "rgb(var(--muted) / <alpha-value>)",
+        control: "rgb(var(--control) / <alpha-value>)",
+        accentEdge: "rgb(var(--accent-edge) / <alpha-value>)",
         accent: "rgb(var(--accent) / <alpha-value>)",
         accentSoft: "rgb(var(--accent-soft) / <alpha-value>)",
         success: "rgb(var(--success) / <alpha-value>)",
@@ -22,7 +25,7 @@ const config: Config = {
         border: "rgb(var(--border) / <alpha-value>)"
       },
       boxShadow: {
-        soft: "0 24px 80px rgba(19, 28, 39, 0.12)",
+        soft: "0 2px 6px rgba(17, 24, 39, 0.05), 0 8px 24px rgba(17, 24, 39, 0.04)",
         halo: "0 0 0 1px rgba(255,255,255,0.16), 0 10px 40px rgba(0,0,0,0.22)"
       },
       borderRadius: {

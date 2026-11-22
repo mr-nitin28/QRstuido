@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
 import "@/app/globals.css";
 
@@ -27,13 +27,19 @@ export const metadata: Metadata = {
   description: "A high-performance QR generator with dynamic links, exports, history, and analytics."
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover"
+};
+
 export default function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${bodyFont.variable} ${displayFont.variable} bg-canvas font-body text-ink antialiased`}>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         {children}

@@ -6,6 +6,22 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { getBaseUrl, getRequestIp } from "@/lib/request";
 import { getQrRepository } from "@/lib/store/repository";
 
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const limit = checkRateLimit({
+    key: `${getRequestIp(request)}:codes:delete`,
+    limit: 40,
+    windowMs: 10 * 60 * 1000
+  });
+  if (!limit.allowed) {
+    return NextResponse.json({ error: "Too many delete requests. Try again shortly." }, { status: 429 });
+  }
+
+  const repository = await getQrRepository();
+  await repository.delete(id);
+  return NextResponse.json({ id });
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

@@ -3,24 +3,32 @@
 @tailwind utilities;
 
 :root {
-  --canvas: 250 244 235;
-  --surface: 255 250 244;
-  --surface-alt: 245 235 223;
-  --ink: 22 29 37;
+  color-scheme: light;
+  --canvas: 255 255 255;
+  --surface: 255 255 255;
+  --surface-alt: 243 244 246;
+  --ink: 23 27 34;
+  --muted: 71 80 94;
+  --control: 124 134 147;
   --accent: 246 143 67;
+  --accent-edge: 172 69 12;
   --accent-soft: 255 199 155;
-  --success: 16 125 92;
-  --warning: 180 98 16;
+  --success: 12 107 75;
+  --warning: 142 75 10;
   --danger: 196 53 62;
-  --border: 214 202 188;
+  --border: 207 212 219;
 }
 
 .dark {
+  color-scheme: dark;
   --canvas: 12 18 29;
   --surface: 18 27 40;
   --surface-alt: 31 43 62;
   --ink: 240 244 248;
+  --muted: 190 200 214;
+  --control: 124 139 159;
   --accent: 255 169 77;
+  --accent-edge: 255 169 77;
   --accent-soft: 255 220 170;
   --success: 78 208 153;
   --warning: 255 181 84;
@@ -35,13 +43,16 @@ html {
 
 body {
   min-height: 100vh;
-  background:
+}
+
+.dark body {
+  background-image:
     radial-gradient(circle at top right, rgba(246, 143, 67, 0.18), transparent 28%),
     radial-gradient(circle at 10% 10%, rgba(41, 181, 155, 0.12), transparent 22%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 44%);
 }
 
-body::before {
+.dark body::before {
   content: "";
   position: fixed;
   inset: 0;
@@ -65,6 +76,56 @@ body::before {
 
   body {
     @apply text-ink;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--ink));
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .page-frame {
+    --gutter: clamp(0.75rem, 2.5vw, 2rem);
+    padding-left: max(var(--gutter), env(safe-area-inset-left));
+    padding-right: max(var(--gutter), env(safe-area-inset-right));
+    padding-top: max(var(--gutter), env(safe-area-inset-top));
+    padding-bottom: calc(var(--gutter) + env(safe-area-inset-bottom));
+  }
+
+  .workspace-nav {
+    top: env(safe-area-inset-top, 0px);
+  }
+
+  .export-actions {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, max(8.5rem, 40%)), 1fr));
+  }
+
+  .export-actions button {
+    height: auto;
+    min-height: 2.75rem;
+    white-space: normal;
+    padding: 0.625rem 0.75rem;
+    line-height: 1.25;
+  }
+
+  .export-actions svg {
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 1023px) {
+  html {
+    scroll-padding-top: calc(4rem + env(safe-area-inset-top));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

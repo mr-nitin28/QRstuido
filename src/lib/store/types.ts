@@ -15,6 +15,7 @@ export interface QrRepository {
   getBySlug(slug: string): Promise<QrRecord | null>;
   create(payload: UpsertQrPayload): Promise<QrRecord>;
   update(id: string, payload: UpsertQrPayload): Promise<QrRecord | null>;
+  delete(id: string): Promise<void>;
   logScan(id: string, input: ScanLogInput): Promise<ScanEvent | null>;
 }
 

@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { randomUUID } from "node:crypto";
 import { createSlug } from "@/lib/qr/slug";
@@ -12,39 +12,36 @@ interface FileStoreShape {
 
 let writeQueue = Promise.resolve<void>(undefined);
 
-async function ensureStore() {
-  const storePath = getStorePath();
-  await mkdir(dirname(storePath), { recursive: true });
-
+async function readStore(): Promise<FileStoreShape> {
   try {
-    await readFile(storePath, "utf8");
-  } catch {
-    const initial: FileStoreShape = { records: [] };
-    await writeFile(storePath, JSON.stringify(initial, null, 2), "utf8");
+    return JSON.parse(await readFile(getStorePath(), "utf8")) as FileStoreShape;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return { records: [] };
+    throw error;
   }
 }
 
-async function readStore() {
-  await ensureStore();
-  const content = await readFile(getStorePath(), "utf8");
-  return JSON.parse(content) as FileStoreShape;
-}
-
 async function writeStore(next: FileStoreShape) {
-  await writeFile(getStorePath(), JSON.stringify(next, null, 2), "utf8");
+  const storePath = getStorePath();
+  await mkdir(dirname(storePath), { recursive: true });
+  const temporary = `${storePath}.${randomUUID()}.tmp`;
+  try {
+    await writeFile(temporary, JSON.stringify(next, null, 2), "utf8");
+    await rename(temporary, storePath);
+  } finally {
+    await rm(temporary, { force: true });
+  }
 }
 
 async function mutateStore<T>(mutator: (store: FileStoreShape) => Promise<T>) {
-  let result!: T;
-
-  writeQueue = writeQueue.then(async () => {
+  const operation = writeQueue.then(async () => {
     const store = await readStore();
-    result = await mutator(store);
+    const result = await mutator(store);
     await writeStore(store);
+    return result;
   });
-
-  await writeQueue;
-  return result;
+  writeQueue = operation.then(() => {}, () => {});
+  return operation;
 }
 
 function createRecord(payload: UpsertQrPayload): QrRecord {
@@ -111,6 +108,12 @@ export const fileRepository: QrRepository = {
       }
 
       return record;
+    });
+  },
+
+  async delete(id) {
+    await mutateStore(async (store) => {
+      store.records = store.records.filter((record) => record.id !== id);
     });
   },
 
